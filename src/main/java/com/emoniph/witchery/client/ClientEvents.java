@@ -20,6 +20,7 @@ import com.emoniph.witchery.infusion.infusions.InfusionOtherwhere;
 import com.emoniph.witchery.util.Config;
 import com.emoniph.witchery.util.RenderUtil;
 import com.emoniph.witchery.util.TransformCreature;
+import com.sinthoras.hydroenergy.api.IHEHasCustomMaterialCalculation;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -72,6 +73,9 @@ public class ClientEvents {
    TransformOtherPlayer otherPlayer = new TransformOtherPlayer();
    RenderVillagerBed renderBed = new RenderVillagerBed();
    private static final ResourceLocation wolfSkin = new ResourceLocation("witchery", "textures/entities/werewolf_man.png");
+
+   private static final String hydroenergy = "hydroenergy";
+   private static final boolean isHydroEnergyLoaded = Loader.isModLoaded(hydroenergy);
 
 
    @SubscribeEvent
@@ -606,11 +610,31 @@ public class ClientEvents {
          }
 
          Block block1 = ActiveRenderInfo.getBlockAtEntityViewpoint(mc.theWorld, entityplayer, partialTicks);
-         if(block1.getMaterial() == Material.water) {
+         if(getMaterialWrapper(block1, entityplayer) == Material.water) {
             f1 = f1 * 60.0F / 70.0F;
          }
 
          return f1;
+      }
+   }
+
+   private Material getMaterialWrapper(Block block, EntityLivingBase entity) {
+      if(isHydroEnergyLoaded) {
+         return getMaterialHEWrapper(block, entity);
+      }
+      else {
+         return event.block.getMaterial();
+      }
+   }
+
+   @Optional.Method(modid = hydroenergy)
+   // Only required for '== Material.water' checks
+   private Material getMaterialHEWrapper(Block block, EntityLivingBase entity) {
+      if(block instanceof IHEHasCustomMaterialCalculation) {
+         return ((IHEHasCustomMaterialCalculation)block).getMaterial(event.entity.posY + event.entity.getEyeHeight());
+      }
+      else {
+         return event.block.getMaterial();
       }
    }
 

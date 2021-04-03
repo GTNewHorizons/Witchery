@@ -70,6 +70,9 @@ repositories {
         name "FireBall API Depot"
         url "http://dl.tsr.me/artifactory/libs-release-local"
     }
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies
@@ -78,6 +81,9 @@ dependencies
 	compile 'codechicken:CodeChickenLib:1.7.10-1.1.3.140:dev'
 	compile 'codechicken:NotEnoughItems:1.7.10-1.0.5.120:dev'
 	compile fileTree(dir: "libs", include: "*.jar")
+    compile ("com.github.SinTh0r4s:HydroEnergy:master-SNAPSHOT:api") {
+        transitive = false
+    }
 }
 
 
